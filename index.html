@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revision Links Hub</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background-color: #333; color: white; text-align: center; padding: 1rem; }
+        .tabs { display: flex; justify-content: center; background-color: #ddd; }
+        .tab-button { padding: 10px 20px; cursor: pointer; background-color: #bbb; border: none; }
+        .tab-button.active { background-color: #fff; }
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { text-decoration: none; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Revision Links Hub</h1>
+        <p>Organize your study resources by category</p>
+    </header>
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab('lld')">LLD</button>
+        <button class="tab-button" onclick="openTab('dsa')">DSA</button>
+        <button class="tab-button" onclick="openTab('llm')">LLM</button>
+        <button class="tab-button" onclick="openTab('agentic')">AGENTIC</button>
+        <button class="tab-button" onclick="openTab('langgraph')">LangGraph & Langchain</button>
+        <button class="tab-button" onclick="openTab('hld')">HLD</button>
+        <button class="tab-button" onclick="openTab('google')">Google</button>
+        <button class="tab-button" onclick="openTab('case-studies')">Case Studies</button>
+        <button class="tab-button" onclick="openTab('design-patterns')">Design Patterns</button>
+    </div>
+    <div id="lld" class="tab-content active">
+        <h2>Low Level Design (LLD)</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="dsa" class="tab-content">
+        <h2>Data Structures & Algorithms (DSA)</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="llm" class="tab-content">
+        <h2>Large Language Models (LLM)</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="agentic" class="tab-content">
+        <h2>AGENTIC</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="langgraph" class="tab-content">
+        <h2>LangGraph & Langchain</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="hld" class="tab-content">
+        <h2>High Level Design (HLD)</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="google" class="tab-content">
+        <h2>Google</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="case-studies" class="tab-content">
+        <h2>Case Studies</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <div id="design-patterns" class="tab-content">
+        <h2>Design Patterns</h2>
+        <ul>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <!-- Add more links here -->
+        </ul>
+    </div>
+    <script>
+        function openTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
