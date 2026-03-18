@@ -24,25 +24,27 @@
         <p>Organize your study resources by category</p>
     </header>
     <div class="tabs">
-        <button class="tab-button active" onclick="openTab('lld')">LLD</button>
-        <button class="tab-button" onclick="openTab('dsa')">DSA</button>
+        <button class="tab-button active" onclick="openTab('dsa')">DSA</button>
+        <button class="tab-button" onclick="openTab('lld')">LLD</button>
+        <button class="tab-button" onclick="openTab('hld')">HLD</button>
         <button class="tab-button" onclick="openTab('llm')">LLM</button>
         <button class="tab-button" onclick="openTab('agentic')">AGENTIC</button>
         <button class="tab-button" onclick="openTab('langgraph')">LangGraph & Langchain</button>
-        <button class="tab-button" onclick="openTab('hld')">HLD</button>
         <button class="tab-button" onclick="openTab('google')">Google</button>
         <button class="tab-button" onclick="openTab('case-studies')">Case Studies</button>
-        <button class="tab-button" onclick="openTab('design-patterns')">Design Patterns</button>
+        <button class="tab-button" onclick="openTab('Tool Details')">Tool Details</button>
     </div>
-    <div id="lld" class="tab-content active">
+    <div id="lld" class="tab-content">
         <h2>Low Level Design (LLD)</h2>
         <ul>
-            <li><a href="#">Link 1</a></li>
-            <li><a href="#">Link 2</a></li>
+            <li><a href="https://codewitharyan.com/system-design/low-level-design"> OP Resource - Aryan Verma</a></li>
+            <li><a href="https://nailyourinterview.org/interview-resources/low-level-design/solid-principles/single-responsibility">Nail Your Interview -> SOLID and LLD basics</a></li>
+            <li><a href="https://refactoring.guru/design-patterns">Refactoring Guru (not good for interviews, OP to learn)</a></li>
+            <li><a href="https://layrs.me/practice/lld">LLD Practice Questions (with gemini as interviewer)</a></li>
             <!-- Add more links here -->
         </ul>
     </div>
-    <div id="dsa" class="tab-content">
+    <div id="dsa" class="tab-content active">
         <h2>Data Structures & Algorithms (DSA)</h2>
         <ul>
             <li><a href="https://takeuforward.org/dsa/strivers-a2z-sheet-learn-dsa-a-to-z">Striver A to Z</a></li>
@@ -100,15 +102,15 @@
     <div id="case-studies" class="tab-content">
         <h2>Case Studies</h2>
         <ul>
-            <li><a href="#">Link 1</a></li>
+            <li><a href="https://gitbybit.com/">Github Free Course In depth 1</a></li>
             <li><a href="#">Link 2</a></li>
             <!-- Add more links here -->
         </ul>
     </div>
-    <div id="design-patterns" class="tab-content">
-        <h2>Design Patterns</h2>
+    <div id="tool-details" class="tab-content">
+        <h2>Tool Details</h2>
         <ul>
-            <li><a href="#">Link 1</a></li>
+            <li><a href="https://gitbybit.com/">In depth git course</a></li>
             <li><a href="#">Link 2</a></li>
             <!-- Add more links here -->
         </ul>
