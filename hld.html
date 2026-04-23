@@ -325,6 +325,41 @@
             color: #999;
             font-style: italic;
         }
+
+        /* --- AI Prompt Button Styles --- */
+        .title-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .ai-prompt-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+
+        .ai-prompt-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .ai-prompt-btn svg {
+            width: 16px;
+            height: 16px;
+        }
     </style>
 </head>
 <body>
@@ -352,8 +387,10 @@
 
         function loadQuestions() {
             try {
-                // Filter for HLD only
-                allQuestions = questionsData.filter(q => q.design_type === 'hld' && q.is_active !== false);
+                // Change 'hld' to 'lld' in your LLD.html file here:
+                const pageDesignType = document.title.includes('LLD') ? 'lld' : 'hld';
+                
+                allQuestions = questionsData.filter(q => q.design_type === pageDesignType && q.is_active !== false);
                 
                 // Extract unique companies
                 const companiesSet = new Set();
@@ -370,7 +407,7 @@
                     const btn = document.createElement('button');
                     btn.className = 'filter-btn';
                     btn.textContent = company;
-                    btn.onclick = () => filterByCompany(company);
+                    btn.onclick = (event) => filterByCompany(company, event);
                     filterButtonsContainer.appendChild(btn);
                 });
                 
@@ -383,12 +420,12 @@
             }
         }
 
-        function filterByCompany(company) {
+        function filterByCompany(company, event) {
             // Update active button
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if(event) event.target.classList.add('active');
             
             // Filter questions
             if (company === 'all') {
@@ -410,7 +447,8 @@
                 return;
             }
             
-            container.innerHTML = filteredQuestions.map(q => createQuestionCard(q)).join('');
+            // Pass the index so we can easily fetch the data for the clipboard
+            container.innerHTML = filteredQuestions.map((q, index) => createQuestionCard(q, index)).join('');
             
             // Add event listeners to collapsible headers
             document.querySelectorAll('.collapsible-header').forEach(header => {
@@ -421,17 +459,84 @@
             });
         }
 
-        function createQuestionCard(question) {
-            const capitalizedCategory = question.category.replace('-', ' ').toUpperCase();
-            const difficultyClass = `difficulty-${question.difficulty}`;
+        // Generate the custom prompt for the AI
+        function getAiPrompt(question) {
+            const formatList = (arr) => arr && arr.length ? arr.map(item => `- ${item}`).join('\n') : 'None specified';
+            
+            return `Please act as a Senior Software Engineer and review my ${question.design_type.toUpperCase()} solution for the following problem.
+
+PROBLEM DETAILS:
+Title: ${question.title}
+Description: ${question.description}
+
+Functional Requirements:
+${formatList(question.functional_requirements)}
+
+Non-Functional Requirements:
+${formatList(question.non_functional_requirements)}
+
+Constraints:
+${formatList(question.constraints)}
+
+Core Components (Guide):
+${formatList(question.core_components)}
+
+Core Flows (Guide):
+${formatList(question.core_flows)}
+
+REVIEW GUIDELINES:
+1. Functional, non-functional requirements, and constraints MUST be present and satisfied in my solution.
+2. Core components and core flows take second precedence. The suggested components/flows above are merely a guide; I may have chosen a different, valid implementation.
+3. Judge my response strictly on the basis of standard ${question.design_type.toUpperCase()} principles.
+4. Point out any flaws, bottlenecks, or wrong design choices in my approach.
+
+MY SOLUTION:
+[Paste your solution/design here]`;
+        }
+
+        // Handle copying the prompt to the clipboard
+        function copyPrompt(index, btnElement) {
+            const question = filteredQuestions[index];
+            const promptText = getAiPrompt(question);
+            
+            navigator.clipboard.writeText(promptText).then(() => {
+                const originalHtml = btnElement.innerHTML;
+                btnElement.innerHTML = '<span>Copied! ✅</span>';
+                btnElement.style.background = '#4CAF50';
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy prompt to clipboard. Please check console logs.');
+            });
+        }
+
+        function createQuestionCard(question, index) {
+            const capitalizedCategory = question.category ? question.category.replace('-', ' ').toUpperCase() : '';
+            const difficultyClass = `difficulty-${question.difficulty || 'medium'}`;
             
             return `
                 <div class="question-card">
                     <div class="question-header">
-                        <div class="question-title">${question.title}</div>
+                        <div class="title-wrapper">
+                            <div class="question-title">${question.title}</div>
+                            <button class="ai-prompt-btn" onclick="copyPrompt(${index}, this)" title="Copy prompt for AI evaluation">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+                                    <path d="M20 3v4"></path>
+                                    <path d="M22 5h-4"></path>
+                                    <path d="M4 17v2"></path>
+                                    <path d="M5 18H3"></path>
+                                </svg>
+                                <span>Copy AI Prompt</span>
+                            </button>
+                        </div>
                         <div>
-                            <span class="difficulty-badge ${difficultyClass}">${question.difficulty.toUpperCase()}</span>
-                            <span class="difficulty-badge" style="background: #f0f0f0; color: #333;">${capitalizedCategory}</span>
+                            <span class="difficulty-badge ${difficultyClass}">${(question.difficulty || '').toUpperCase()}</span>
+                            ${capitalizedCategory ? `<span class="difficulty-badge" style="background: #f0f0f0; color: #333;">${capitalizedCategory}</span>` : ''}
                         </div>
                         <div style="margin-top: 8px;">
                             ${question.companies ? question.companies.map(c => 
