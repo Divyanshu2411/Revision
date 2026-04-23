@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>HLD - System Design Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .questions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .question-header {
+            margin-bottom: 15px;
+        }
+
+        .question-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .difficulty-easy {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-hard {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .companies-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e7f3ff;
+            color: #0066cc;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 6px;
+            margin-top: 8px;
+        }
+
+        .question-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+
+        .collapsible-section {
+            margin-bottom: 15px;
+        }
+
+        .collapsible-header {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: #333;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #e8e8e8;
+        }
+
+        .collapsible-header.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .collapsible-icon {
+            transition: transform 0.3s ease;
+            font-size: 16px;
+        }
+
+        .collapsible-header.active .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 12px 0;
+            color: #555;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .collapsible-content.active {
+            display: block;
+        }
+
+        .content-item {
+            margin-bottom: 10px;
+            padding-left: 15px;
+        }
+
+        .content-item:before {
+            content: "• ";
+            color: #667eea;
+            font-weight: bold;
+            margin-left: -15px;
+            margin-right: 8px;
+        }
+
+        .requirements-list, .constraints-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .requirements-list li, .constraints-list li {
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .requirements-list li:before, .constraints-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            position: absolute;
+            left: 0;
+        }
+
+        .no-questions {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .solution-content {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+
+        .solution-content pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        .solution-content code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .solution-content h3, .solution-content h4 {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .solution-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+
+        .solution-content th, .solution-content td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .solution-content th {
+            background: #f5f5f5;
+        }
+
+        .core-item {
+            background: #f0f7ff;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border-left: 3px solid #0066cc;
+        }
+
+        .empty-message {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ High-Level Design (HLD) Practice</h1>
+            <p class="subtitle">System Design Interview Questions focused on architecture and design</p>
+        </header>
+
+        <div class="filter-section">
+            <div class="filter-title">Filter by Company:</div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterByCompany('all')">All Companies</button>
+            </div>
+        </div>
+
+        <div id="questionsContainer" class="questions-grid"></div>
+    </div>
+
+    <script src="question.js"></script>
+    <script>
+        let allQuestions = [];
+        let filteredQuestions = [];
+        let allCompanies = [];
+
+        function loadQuestions() {
+            try {
+                // Filter for HLD only
+                allQuestions = questionsData.filter(q => q.design_type === 'hld' && q.is_active !== false);
+                
+                // Extract unique companies
+                const companiesSet = new Set();
+                allQuestions.forEach(q => {
+                    if (q.companies && Array.isArray(q.companies)) {
+                        q.companies.forEach(company => companiesSet.add(company));
+                    }
+                });
+                allCompanies = Array.from(companiesSet).sort();
+                
+                // Add company filter buttons
+                const filterButtonsContainer = document.querySelector('.filter-buttons');
+                allCompanies.forEach(company => {
+                    const btn = document.createElement('button');
+                    btn.className = 'filter-btn';
+                    btn.textContent = company;
+                    btn.onclick = () => filterByCompany(company);
+                    filterButtonsContainer.appendChild(btn);
+                });
+                
+                filteredQuestions = [...allQuestions];
+                displayQuestions();
+            } catch (error) {
+                console.error('Error loading questions:', error);
+                document.getElementById('questionsContainer').innerHTML = 
+                    '<div class="no-questions">Error loading questions. Check the browser console for details.</div>';
+            }
+        }
+
+        function filterByCompany(company) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter questions
+            if (company === 'all') {
+                filteredQuestions = [...allQuestions];
+            } else {
+                filteredQuestions = allQuestions.filter(q => 
+                    q.companies && q.companies.includes(company)
+                );
+            }
+            
+            displayQuestions();
+        }
+
+        function displayQuestions() {
+            const container = document.getElementById('questionsContainer');
+            
+            if (filteredQuestions.length === 0) {
+                container.innerHTML = '<div class="no-questions">No questions found for this filter.</div>';
+                return;
+            }
+            
+            container.innerHTML = filteredQuestions.map(q => createQuestionCard(q)).join('');
+            
+            // Add event listeners to collapsible headers
+            document.querySelectorAll('.collapsible-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    this.nextElementSibling.classList.toggle('active');
+                });
+            });
+        }
+
+        function createQuestionCard(question) {
+            const capitalizedCategory = question.category.replace('-', ' ').toUpperCase();
+            const difficultyClass = `difficulty-${question.difficulty}`;
+            
+            return `
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-title">${question.title}</div>
+                        <div>
+                            <span class="difficulty-badge ${difficultyClass}">${question.difficulty.toUpperCase()}</span>
+                            <span class="difficulty-badge" style="background: #f0f0f0; color: #333;">${capitalizedCategory}</span>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            ${question.companies ? question.companies.map(c => 
+                                `<span class="companies-tag">${c}</span>`
+                            ).join('') : '<span class="empty-message">No companies tagged</span>'}
+                        </div>
+                    </div>
+                    
+                    <div class="tags-container">
+                        ${question.tags && question.tags.length > 0 ? 
+                            question.tags.map(tag => `<span class="tag">${tag}</span>`).join('') :
+                            '<span class="empty-message">No tags</span>'
+                        }
+                    </div>
+                    
+                    <div class="question-description">${question.description}</div>
+                    
+                    ${question.functional_requirements && question.functional_requirements.length > 0 ? `
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>Functional Requirements</span>
+                                <span class="collapsible-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <ul class="requirements-list">
+                                    ${question.functional_requirements.map(req => 
+                                        `<li>${req}</li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${question.non_functional_requirements && question.non_functional_requirements.length > 0 ? `
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>Non-Functional Requirements</span>
+                                <span class="collapsible-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <ul class="requirements-list">
+                                    ${question.non_functional_requirements.map(req => 
+                                        `<li>${req}</li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${question.constraints && question.constraints.length > 0 ? `
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>Constraints</span>
+                                <span class="collapsible-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <ul class="constraints-list">
+                                    ${question.constraints.map(constraint => 
+                                        `<li>${constraint}</li>`
+                                    ).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${question.core_components && question.core_components.length > 0 ? `
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>Core Components</span>
+                                <span class="collapsible-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                ${question.core_components.map(component => 
+                                    `<div class="core-item">${component}</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${question.core_flows && question.core_flows.length > 0 ? `
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>Core Flows</span>
+                                <span class="collapsible-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                ${question.core_flows.map(flow => 
+                                    `<div class="core-item">${flow}</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${question.hints && question.hints.length > 0 ? `
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>💡 Hints</span>
+                                <span class="collapsible-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                ${question.hints.map(hint => 
+                                    `<div class="content-item">${hint}</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${question.sample_solution ? `
+                        <div class="collapsible-section">
+                            <div class="collapsible-header">
+                                <span>📖 Sample Solution</span>
+                                <span class="collapsible-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="solution-content">
+                                    ${question.sample_solution
+                                        .replace(/</g, '&lt;')
+                                        .replace(/>/g, '&gt;')
+                                        .replace(/\n/g, '<br>')
+                                        .replace(/```(.*?)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Load questions when page loads
+        window.addEventListener('load', loadQuestions);
+    </script>
+</body>
+</html>
